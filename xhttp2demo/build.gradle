@@ -1,0 +1,114 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.xuexiang.xaop' //引用xaop插件
+apply plugin: 'com.xuexiang.xrouter' //引用xrouter-plugin插件实现自动注册
+
+android {
+    compileSdkVersion build_versions.target_sdk
+    buildToolsVersion build_versions.build_tools
+    
+    defaultConfig {
+        applicationId "com.xuexiang.xhttp2demo"
+        minSdkVersion 19
+        targetSdkVersion build_versions.target_sdk
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [moduleName: project.getName()]
+            }
+        }
+    }
+
+    if (isNeedPackage.toBoolean()) {
+        signingConfigs {
+            release {
+                storeFile file(app_release.storeFile)
+                storePassword app_release.storePassword
+                keyAlias app_release.keyAlias
+                keyPassword app_release.keyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (isNeedPackage.toBoolean()) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+
+    if (isNeedPackage.toBoolean()) {
+        applicationVariants.all { variant ->
+            variant.outputs.all {
+                if (variant.buildType.name == 'release') {
+                    outputFileName = "xhttp2_demo_${defaultConfig.versionName}.apk"
+                }
+            }
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation deps.junit
+    androidTestImplementation deps.runner
+    androidTestImplementation deps.espresso.core
+
+    //SmartRefreshLayout
+    implementation deps.androidx.appcompat
+    implementation deps.androidx.recyclerview
+    implementation deps.androidx.design
+    implementation 'com.github.xuexiangjys.SmartRefreshLayout:refresh-layout:1.1.5'
+
+    //XUtil
+    implementation 'com.github.xuexiangjys.XUtil:xutil-core:1.1.8'
+    implementation 'com.github.xuexiangjys.XUtil:xutil-sub:1.1.8'
+    //rxutil2
+    implementation 'com.jakewharton.rxbinding2:rxbinding:2.1.1'
+    implementation 'com.github.xuexiangjys:rxutil2:1.1.5'
+    //XAOP
+    implementation 'com.github.xuexiangjys.XAOP:xaop-runtime:x1.0.5'
+    //XRouter
+    implementation 'com.github.xuexiangjys.XRouter:xrouter-runtime:1.0.1'
+    annotationProcessor 'com.github.xuexiangjys.XRouter:xrouter-compiler:1.0.1'
+    //XPage
+    implementation 'com.github.xuexiangjys.XPage:xpage-lib:3.0.0'
+    annotationProcessor 'com.github.xuexiangjys.XPage:xpage-compiler:3.0.0'
+    //butterKnife的sdk
+    implementation 'com.jakewharton:butterknife:10.1.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
+
+    //XHttp
+//    implementation project(':xhttp2-lib')
+
+    implementation 'com.github.xuexiangjys:XHttp2:2.0.0'
+
+    //RxJava
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.0'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+    //OkHttp的依赖包
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    //Gson序列化反序列化的依赖包
+    implementation deps.gson
+
+    implementation 'com.github.gturedi:stateful-layout:1.2.1'
+
+    implementation deps.glide
+
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+}
